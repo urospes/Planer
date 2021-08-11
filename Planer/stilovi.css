@@ -1,0 +1,59 @@
+.obaveza{
+    background-color: azure;
+    flex: 0 0 150px;
+    border: 2px solid black;
+    text-align: center;
+    margin-left: 0.2rem;
+    margin-bottom: 0.2rem;
+    margin-right: 0.2rem;
+}
+
+.plava{
+    background-color: #48cae4;
+}
+.zelena{
+    background-color: #52b788;
+}
+.zuta{
+    background-color: #ffea00;
+}
+
+.bitna{
+    border: 2px solid red;
+}
+.danTekstKontejner{
+    text-align: center;
+}
+p, h2, h3, h4, h5 {
+    margin: 0.4rem;
+}
+.danKontejner{
+    background-color: magenta;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    display: flex;
+    flex-direction: column;
+}
+.obavezeKontejner{
+    display: flex;
+    flex-direction: row;
+    align-items: space-evenly;
+    justify-content: start;
+    flex-wrap: wrap;
+}
+
+.planer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.kontejnerPlaner{
+    width: 80%;
+}
+.kontejnerForme{
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    margin-right: 0.2rem;
+    justify-content: center;
+}
