@@ -13,25 +13,63 @@ export class Planer{
         this.meseci[mesec].dani.push(dan);
     }
 
+    crtajFormu(host){
+
+        if(!host){
+            throw new Error("Greska!");
+        }
+
+        const elementiForme = ["input", "textarea", "select", "checkbox", "input", "input"];
+        const elementiFormeKlase = ["nazivInput", "opisInput", "tipSelect", "chkBitno", "vremeOdInput", "vremeDoInput"];
+        const labele = ["Unesite naziv obaveze", "Detaljniji opis", "Tip obaveze", "Bitno?", "Vreme pocetka", "Vreme kraja"];
+        elementiForme.forEach((tipPolja, index) => {
+            const labela = document.createElement("label");
+            labela.innerHTML = labele[index];
+            host.appendChild(labela);
+            const inputElement = document.createElement(tipPolja);
+            if(tipPolja === "input"){
+                inputElement.type = "text";
+            } else if (tipPolja === "select"){
+
+                const opcije = ["-", "Fakultet", "Hobi", "Ostalo"];
+                opcije.forEach(opcija=>{
+                    const tip = document.createElement("option");
+                    tip.innerHTML = opcija;
+                    inputElement.appendChild(tip);
+                })
+
+            }
+
+            inputElement.className = elementiFormeKlase[index];
+            host.appendChild(inputElement);
+        })
+        const dugme = document.createElement("button");
+        dugme.innerHTML = "Dodaj obavezu";
+        dugme.className = "dugmeDodaj";
+        host.appendChild(dugme);
+    }
+
     crtajPlaner(host){
 
         if(!host){
             throw new Error("Greska!");
         }
 
+        const naslov = document.createElement("h1");
+        naslov.className = "naslov";
+        naslov.innerHTML = "Godisnji planer";
+        host.appendChild(naslov);
+
         this.kontejner = document.createElement("div");
         this.kontejner.className = "planer";
 
-        //***************** forme i ostalo ********
+        //***************** kontejner za formu ********
         
         const podKontejnerForma = document.createElement("div");
         podKontejnerForma.className = "kontejnerForme";
         this.kontejner.appendChild(podKontejnerForma);
-        //elementi forme
-        //**********************************OVDEEEEEE ***********************************************
-        const polje = document.createElement("input");
-        polje.type = "text";
-        podKontejnerForma.appendChild(polje);
+
+        this.crtajFormu(podKontejnerForma);
 
         //*****************************************
 

@@ -1,3 +1,7 @@
+body{
+    background-color: #adb5bd;
+}
+
 .obaveza{
     background-color: azure;
     flex: 0 0 150px;
@@ -6,20 +10,31 @@
     margin-left: 0.2rem;
     margin-bottom: 0.2rem;
     margin-right: 0.2rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
 }
 
 .plava{
+    background-color: #90e0ef;
+}
+.plava:hover{
     background-color: #48cae4;
 }
 .zelena{
+    background-color: #74c69d;
+}
+.zelena:hover{
     background-color: #52b788;
 }
 .zuta{
-    background-color: #ffea00;
+    background-color: #fdffb6;
+}
+.zuta:hover{
+    background-color: #ffe566;
 }
 
 .bitna{
-    border: 2px solid red;
+    border: 4px solid red;
 }
 .danTekstKontejner{
     text-align: center;
@@ -28,7 +43,8 @@ p, h2, h3, h4, h5 {
     margin: 0.4rem;
 }
 .danKontejner{
-    background-color: magenta;
+    background-color: #cddafd;
+    border-radius: 0.5rem;
     margin-top: 0.2rem;
     margin-bottom: 0.2rem;
     display: flex;
@@ -45,10 +61,11 @@ p, h2, h3, h4, h5 {
 .planer{
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-between;
 }
 .kontejnerPlaner{
-    width: 80%;
+    width: 79%;
 }
 .kontejnerForme{
     width: 20%;
@@ -56,4 +73,31 @@ p, h2, h3, h4, h5 {
     flex-direction: column;
     margin-right: 0.2rem;
     justify-content: center;
+    background-color: #cddafd;
+    border-radius: 0.5rem;
+    margin: 0.2rem 0.4rem 0.2rem 0;
+}
+input, label, textarea, select {
+    margin: 0 0.5rem 0.4rem 0.5rem;
+    height: 1.5rem;
+    border-radius: 0.3rem;
+}
+textarea{
+    height: 4rem;
+}
+
+.chkBitno{
+    align-self: start;
+}
+.naslov{
+    text-align: center;
+    margin: 0.4rem 0 0.5rem 0;
+}
+.dugmeDodaj{
+    width: 33%;
+    align-self: center;
+    height: 50px;
+    padding: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
 }
