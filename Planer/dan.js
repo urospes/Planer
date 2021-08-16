@@ -9,6 +9,7 @@ export class Dan {
     }
 
     dodajObavezu(obaveza){
+        obaveza.dan = this;
         this.obaveze.push(obaveza);
     }
 
