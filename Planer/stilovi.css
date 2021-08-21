@@ -10,7 +10,7 @@ body{
     padding: 0.3rem;
     border-radius: 0.5rem;
     cursor: pointer;
-    flex: 0 1 150px;
+    flex: 1 1 150px;
 }
 
 .plava{

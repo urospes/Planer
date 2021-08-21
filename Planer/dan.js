@@ -1,8 +1,8 @@
-import { Obaveza } from "./obaveza.js";
 
 export class Dan {
 
-    constructor(datum){
+    constructor(id, datum){
+        this.id = id;
         this.kontejner = null;
         this.obaveze = [];
         this.datum = new Date(datum);

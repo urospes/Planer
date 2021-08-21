@@ -1,6 +1,7 @@
 export class Obaveza {
 
-    constructor(naziv, tip, opis, bitna, vremeOd, vremeDo){
+    constructor(id, naziv, tip, opis, bitna, vremeOd, vremeDo){
+        this.id = id;
         this.kontejner = null;
         this.naziv = naziv;
         this.tip = tip;
@@ -71,18 +72,31 @@ export class Obaveza {
         })
         if(obavezaZaBrisanjeIndex !== -1){
             //brisemo iz niza
-            this.dan.obaveze.splice(obavezaZaBrisanjeIndex, 1);
-            //brisemo i nacrtano
-            let roditelj = this.kontejner.parentNode;
-            roditelj.removeChild(this.kontejner);
+            fetch("https://localhost:5001/Planer/ObrisiObavezu/" + this.id.toString(),
+            {
+                method: "DELETE",
+                headers: 
+                {
+                    "Content-Type" : "application/json"
+                }
+            }).then(response => {
+                if(response.status == 200){
+                    this.dan.obaveze.splice(obavezaZaBrisanjeIndex, 1);
+                    //brisemo i nacrtano
+                    let roditelj = this.kontejner.parentNode;
+                    roditelj.removeChild(this.kontejner);
 
-            if(this.dan.obaveze.length === 0){
-                this.dan.planer.obrisiDan(this.dan);
-                //brisemo i nacrtani dan
-                roditelj = this.dan.kontejner.parentNode;
-                roditelj.removeChild(this.dan.kontejner);
-            }
-            alert("Brisanje uspesno");
+                    if(this.dan.obaveze.length === 0){
+                        this.dan.planer.obrisiDan(this.dan);
+                        //brisemo i nacrtani dan
+                        roditelj = this.dan.kontejner.parentNode;
+                        roditelj.removeChild(this.dan.kontejner);
+                    }
+                    alert("Brisanje uspesno");
+                }
+            }).catch(error => {
+                alert(error);
+            })
         }
     }
 
@@ -100,7 +114,11 @@ export class Obaveza {
                 if(formatiranoVreme[0] === "12"){
                     return "00:" + formatiranoVreme[1];
                 } else {
-                    return "0"+ formatiranoVreme[0] + ":" + formatiranoVreme[1];
+                    if(formatiranoVreme[0] !== "11" && formatiranoVreme[0] !== "10"){
+                        return "0"+ formatiranoVreme[0] + ":" + formatiranoVreme[1];
+                    } else {
+                        return formatiranoVreme[0] + ":" + formatiranoVreme[1];
+                    }
                 }
             }
         }

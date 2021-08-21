@@ -1,14 +1,29 @@
 import { Dan } from "./dan.js";
 import { Obaveza } from "./obaveza.js";
+import { Mesec } from "./mesec.js";
 
 export class Planer{
 
-    constructor(vlasnik){
+    constructor(id, vlasnik, meseci){
+        this.id = id;
         this.kontejner = null;
         this.vlasnik = vlasnik;
-        this.meseci = [{mesec: "Januar", dani: []}, {mesec: "Februar", dani: []}, {mesec: "Mart", dani: []}, 
-        {mesec: "April", dani: []}, {mesec: "Maj", dani: []}, {mesec: "Jun", dani: []}, {mesec: "Jul", dani: []}, {mesec: "Avgust", dani: []}, 
-        {mesec: "Septembar", dani: []}, {mesec: "Oktobar", dani: []}, {mesec: "Novembar", dani: []}, {mesec: "Decembar", dani: []}];
+        const listaMeseci = ["Januar", "Februar", "Mart", "April", "Maj", "Jun", "Jul", "Avgust", "Septembar", "Oktobar", "Novembar", "Decembar"];
+        this.meseci = [];
+        listaMeseci.forEach(mesecNaziv => {
+            const mesecIzBaze = meseci.find(ucitaniMesec => {
+                return ucitaniMesec.naziv === mesecNaziv;
+            });
+            if(mesecIzBaze){
+                const m = new Mesec(mesecIzBaze.naziv, mesecIzBaze.dani);
+                m.planer = this;
+                this.meseci.push(m);
+            } else {
+                const m = new Mesec(mesecNaziv, []);
+                m.planer = this;
+                this.meseci.push(m);
+            }
+        })
 
         //inicijalno su svi meseci neiscrtani
         this.meseci.forEach(mesec => {
@@ -119,59 +134,10 @@ export class Planer{
         this.kontejner.appendChild(podKonejnerPlaner);
 
         this.meseci.forEach(mesec => {
-            const podKontejner = document.createElement("div");
-            podKontejner.classList.add("kontejnerMesec");
-            podKontejner.id = mesec.mesec + "Div";
-            podKontejner.innerHTML = mesec.mesec;
-            const divDugme = document.createElement("div");
-            divDugme.className = "dugmeDiv";
-            podKontejner.appendChild(divDugme);
-            const dugmePrikaz = document.createElement("button");
-            dugmePrikaz.innerHTML = "Prikazi obaveze";
-            dugmePrikaz.className = "dugme";
-            dugmePrikaz.classList.add("zelenoDugme");
-            dugmePrikaz.id = mesec.mesec;
-            dugmePrikaz.onclick=(event) => {
-                this.prikaziMesec(event.target.id, dugmePrikaz, podKontejner);
-            }
-            divDugme.appendChild(dugmePrikaz);
-            podKonejnerPlaner.appendChild(podKontejner);
+            mesec.crtajMesec(podKonejnerPlaner);
         })
         host.appendChild(this.kontejner);
     }
-
-    prikaziMesec(mesec, dugme, host){
-        const kliknutiMesec = this.meseci.find(element => {
-            return element.mesec === mesec;
-        })
-        if(!kliknutiMesec){
-            throw new Error("Ne postoji taj mesec!");
-        }
-        if(!kliknutiMesec.iscrtan && kliknutiMesec.dani.length === 0){
-            alert("Nemate obaveze ovog meseca!");
-        } else {
-            if(!kliknutiMesec.iscrtan){
-                kliknutiMesec.iscrtan = true;
-                dugme.innerHTML = "Sakrij obaveze"
-                dugme.classList.remove("zelenoDugme");
-                dugme.classList.add("crvenoDugme");
-                host.scrollIntoView(true);
-                kliknutiMesec.dani.forEach(dan => {
-                    dan.crtajDan(host);
-                })
-            } else {
-                kliknutiMesec.iscrtan = false;
-                dugme.innerHTML = "Prikazi obaveze";
-                dugme.classList.remove("crvenoDugme");
-                dugme.classList.add("zelenoDugme");
-                const deca = host.querySelectorAll(".danKontejner");
-                deca.forEach(dete => {
-                    dete.remove();
-                })
-            }
-        }
-    }
-
 
     onDodajObavezu(event){
         
@@ -197,37 +163,82 @@ export class Planer{
             const mesecIndex = new Date(inputPolja[3]).getMonth();
             const datumPocetka = inputPolja[3] + "T" + inputPolja[4] + ":00";
             const datumKraja = inputPolja[3] + "T" + inputPolja[5] + ":00";
-            const obaveza = new Obaveza(inputPolja[0], inputPolja[2], inputPolja[1], inputPolja[6], datumPocetka, datumKraja);
-            const dan = new Dan(datumPocetka);
+            const obavezaTemplate = new Obaveza(-1 , inputPolja[0], inputPolja[2], inputPolja[1], inputPolja[6], datumPocetka, datumKraja);
 
             const danUKalendaru = this.meseci[mesecIndex].dani.find(postojeciDan => {
-                return dan.datum.getDay() === postojeciDan.datum.getDay()
+                return new Date(datumPocetka).getDate() === postojeciDan.datum.getDate();
             });
 
             const mesec = this.meseci[mesecIndex].mesec;
             if(!danUKalendaru){
-                dan.dodajObavezu(obaveza);
-                dan.planer = this;
-                this.meseci[mesecIndex].dani.push(dan);
+                    fetch("https://localhost:5001/Planer/DodajObavezu/" + "-1/"+ this.id, 
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            naziv: obavezaTemplate.naziv,
+                            opis: obavezaTemplate.opis,
+                            tip: obavezaTemplate.tip,
+                            bitna: obavezaTemplate.bitna,
+                            vremeOd: datumPocetka,
+                            vremeDo: datumKraja
+                        })
+                    }).then(response => {
+                        if(response.status == 200){
+                            response.json().then(ids => {
+                                const dan = new Dan(ids[1], datumPocetka);
+                                const obaveza = new Obaveza(ids[0], inputPolja[0], inputPolja[2], inputPolja[1], inputPolja[6], datumPocetka, datumKraja);
+                                dan.dodajObavezu(obaveza);
+                                dan.planer = this;
+                                this.meseci[mesecIndex].dani.push(dan);
 
-                //ukoliko mesec nije iscrtan crtamo mesec, ako je iscrtan crtamo samo dan
-                if(!this.meseci[mesecIndex].iscrtan){
-                    this.prikaziMesec(mesec, this.kontejner.querySelector("#" + mesec), this.kontejner.querySelector("#" + mesec + "Div"));
-                } else {
-                    dan.crtajDan(this.kontejner.querySelector("#" + mesec + "Div"));
-                }
+                                if(!this.meseci[mesecIndex].iscrtan){
+                                    this.meseci[mesecIndex].prikaziMesec(this, this.kontejner.querySelector("#" + mesec), this.kontejner.querySelector("#" + mesec + "Div"));
+                                } else {
+                                    dan.crtajDan(this.kontejner.querySelector("#" + mesec + "Div"));
+                                }
+                            })
+                        }
+                    }).catch(error => {
+                        alert(error);
+                    });
             } else {
                 //proveravamo da li postoji druga obaveza u to vreme
                 if(!this.postojiObaveza(new Date(datumPocetka).toLocaleTimeString(), new Date(datumKraja).toLocaleTimeString(), danUKalendaru)){
-                    obaveza.dan = danUKalendaru;
-                    danUKalendaru.obaveze.push(obaveza);
-                    //crtamo mesec ako nije iscrtan, ako jeste crtamo novu obavezu za odgovarajuci dan
-                    if(!this.meseci[mesecIndex].iscrtan){
-                        this.prikaziMesec(mesec, this.kontejner.querySelector("#" + mesec), this.kontejner.querySelector("#" + mesec + "Div"));
-                    } else {
-                        const danKontejner = danUKalendaru.kontejner.querySelector(".obavezeKontejner");
-                        obaveza.crtajObavezu(danKontejner);
-                    }
+                    fetch("https://localhost:5001/Planer/DodajObavezu/" + danUKalendaru.id.toString() + "/" + this.id, 
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            naziv: obavezaTemplate.naziv,
+                            opis: obavezaTemplate.opis,
+                            tip: obavezaTemplate.tip,
+                            bitna: obavezaTemplate.bitna,
+                            vremeOd: datumPocetka,
+                            vremeDo: datumKraja
+                        })
+                    }).then(response => {
+                        if(response.status == 200){
+                            response.json().then(ids => {
+                                const obaveza = new Obaveza(ids[0], inputPolja[0], inputPolja[2], inputPolja[1], inputPolja[6], datumPocetka, datumKraja);
+                                obaveza.dan = danUKalendaru;
+                                danUKalendaru.obaveze.push(obaveza);
+
+                                if(!this.meseci[mesecIndex].iscrtan){
+                                    this.meseci[mesecIndex].prikaziMesec(this, this.kontejner.querySelector("#" + mesec), this.kontejner.querySelector("#" + mesec + "Div"));
+                                } else {
+                                    const danKontejner = danUKalendaru.kontejner.querySelector(".obavezeKontejner");
+                                    obaveza.crtajObavezu(danKontejner);
+                                }
+                            })
+                        }
+                    }).catch(error => {
+                        alert(error);
+                    });
                 } else {
                     alert("Vec imate zakazanu obavezu u to vreme!");
                     return;
@@ -247,7 +258,7 @@ export class Planer{
         dan.obaveze.forEach(obaveza => {
             if((vremePocetka >= obaveza.vremeOd && vremePocetka <= obaveza.vremeDo ) || 
                 (vremeKraja >= obaveza.vremeOd && vremeKraja <= obaveza.vremeDo) || 
-                (vremePocetka < obaveza.vremeOd && vremeKraja > obaveza.vremeDo)){
+                (vremePocetka <= obaveza.vremeOd && vremeKraja >= obaveza.vremeDo)){
                     nevalidno = true;
                 }
         })
@@ -316,17 +327,40 @@ export class Planer{
         if(!this.testirajUnetoVreme(novoVremePocetka, novoVremeKraja)){
             alert("Molimo vas da unesete validno vreme pocetka i vreme kraja. Proverite da li ste ispostovali format!");
         } else {
-            const obavezaRoditelj = this.obavezaZaIzmenu.kontejner.parentNode;
-            obavezaRoditelj.removeChild(this.obavezaZaIzmenu.kontejner);
-
-            const novoVremeOd = new Date(datum + "T" + novoVremePocetka + ":00").toLocaleTimeString();
-            const novoVremeDo = new Date(datum + "T" + novoVremeKraja + ":00").toLocaleTimeString();
-            this.obavezaZaIzmenu.vremeOd = novoVremeOd;
-            this.obavezaZaIzmenu.vremeDo = novoVremeDo;
+            //const novoVremeOd = new Date(datum + "T" + novoVremePocetka + ":00").toLocaleTimeString();
+            //const novoVremeDo = new Date(datum + "T" + novoVremeKraja + ":00").toLocaleTimeString();
+            const novoVremeOd = datum + "T" + novoVremePocetka + ":00";
+            const novoVremeDo = datum + "T" + novoVremeKraja + ":00";
+            this.obavezaZaIzmenu.vremeOd = new Date(novoVremeOd).toLocaleTimeString();
+            this.obavezaZaIzmenu.vremeDo = new Date(novoVremeDo).toLocaleTimeString();
             this.obavezaZaIzmenu.bitna = bitna;
-
-            this.obavezaZaIzmenu.crtajObavezu(obavezaRoditelj);
-            alert("Izmena uspesno obavljena!");
+            fetch("https://localhost:5001/Planer/IzmeniObavezu/" + this.obavezaZaIzmenu.dan.id.toString(),
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id: this.obavezaZaIzmenu.id,
+                    naziv: this.obavezaZaIzmenu.naziv,
+                    opis: this.obavezaZaIzmenu.opis,
+                    tip: this.obavezaZaIzmenu.tip,
+                    bitna: this.obavezaZaIzmenu.bitna,
+                    vremeOd: novoVremeOd,
+                    vremeDo: novoVremeDo
+                })
+            }).then(response => {
+                if(response.status == 200){
+                    const obavezaRoditelj = this.obavezaZaIzmenu.kontejner.parentNode;
+                    obavezaRoditelj.removeChild(this.obavezaZaIzmenu.kontejner);
+                    this.obavezaZaIzmenu.crtajObavezu(obavezaRoditelj);
+                    alert("Izmena uspesno obavljena!");
+                } else {
+                    alert("Uneli ste nevalidno vreme. Proverite da li imate obavezu u to vreme!");
+                }
+            }).catch(error => {
+                alert(error);
+            })
         }
     }
 
@@ -340,7 +374,6 @@ export class Planer{
         dugmeDodaj.classList.add("dugmeDodaj");
         dugmeDodaj.classList.add("dugmePrimary");
         dugmeDodaj.onclick = (event)=>{
-            console.log(this);
             this.onDodajObavezu(event);
         }
         roditelj.appendChild(dugmeDodaj);

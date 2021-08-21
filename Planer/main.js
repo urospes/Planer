@@ -1,8 +1,6 @@
-import { Dan } from "./dan.js";
-import { Obaveza } from "./obaveza.js";
 import { Planer } from "./planer.js";
 
-const planer = new Planer("Uros Pesic");
+/*const planer = new Planer("Uros Pesic");
 const datum = "2021-11-11T13:34:23";
 const dan = new Dan("2021-11-23");
 const dan2 = new Dan("2020-1-3");
@@ -56,4 +54,15 @@ planer2.dodajDan(dan12);
 planer2.dodajDan(dan22);
 planer2.dodajDan(dan32);
 
-planer2.crtajPlaner(document.body);
+planer2.crtajPlaner(document.body);*/
+
+fetch("https://localhost:5001/Planer/PreuzmiPlanere").then(response => {
+    response.json().then(data => {
+        data.forEach(planerData => {
+            const planer = new Planer(planerData.id, planerData.vlasnik, planerData.meseci);
+            planer.crtajPlaner(document.body);
+        })
+    }).catch(error => {
+        alert(error);
+    })
+})
