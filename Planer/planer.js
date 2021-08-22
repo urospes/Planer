@@ -195,9 +195,9 @@ export class Planer{
                                 this.meseci[mesecIndex].dani.push(dan);
 
                                 if(!this.meseci[mesecIndex].iscrtan){
-                                    this.meseci[mesecIndex].prikaziMesec(this, this.kontejner.querySelector("#" + mesec), this.kontejner.querySelector("#" + mesec + "Div"));
+                                    this.meseci[mesecIndex].prikaziMesec(this, this.kontejner.querySelector("." + mesec), this.kontejner.querySelector("." + mesec + "Div"));
                                 } else {
-                                    dan.crtajDan(this.kontejner.querySelector("#" + mesec + "Div"));
+                                    dan.crtajDan(this.kontejner.querySelector("." + mesec + "Div"));
                                 }
                             })
                         }
@@ -229,7 +229,7 @@ export class Planer{
                                 danUKalendaru.obaveze.push(obaveza);
 
                                 if(!this.meseci[mesecIndex].iscrtan){
-                                    this.meseci[mesecIndex].prikaziMesec(this, this.kontejner.querySelector("#" + mesec), this.kontejner.querySelector("#" + mesec + "Div"));
+                                    this.meseci[mesecIndex].prikaziMesec(this, this.kontejner.querySelector("." + mesec), this.kontejner.querySelector("." + mesec + "Div"));
                                 } else {
                                     const danKontejner = danUKalendaru.kontejner.querySelector(".obavezeKontejner");
                                     obaveza.crtajObavezu(danKontejner);

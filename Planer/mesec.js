@@ -18,7 +18,7 @@ export class Mesec{
 
         const podKontejner = document.createElement("div");
         podKontejner.classList.add("kontejnerMesec");
-        podKontejner.id = this.mesec + "Div";
+        podKontejner.classList.add(this.mesec + "Div");
         podKontejner.innerHTML = this.mesec;
         const divDugme = document.createElement("div");
         divDugme.className = "dugmeDiv";
@@ -27,7 +27,7 @@ export class Mesec{
         dugmePrikaz.innerHTML = "Prikazi obaveze";
         dugmePrikaz.className = "dugme";
         dugmePrikaz.classList.add("zelenoDugme");
-        dugmePrikaz.id = this.mesec;
+        dugmePrikaz.classList.add(this.mesec);
         dugmePrikaz.onclick=(event) => {
             this.prikaziMesec(this.planer, dugmePrikaz, podKontejner);
         }

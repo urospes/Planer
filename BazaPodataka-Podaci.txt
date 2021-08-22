@@ -1,0 +1,2 @@
+INSERT INTO Planer VALUES('Uros Pesic');
+INSERT INTO Planer VALUES('Pera Peric');
